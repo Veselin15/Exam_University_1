@@ -36,33 +36,39 @@ void printArray(int arr[], int n, const string& msg) {
     cout << endl;
 }
 
-int OddArray(int arr[], int n) {
-    int oddArr[MAX_STUDENTS];
+int OddArray(const int arr[], int n, int oddArr[]) {
     int oddCount = 0;
     for (int i = 0; i < n; i++) {
         if (arr[i] % 2 != 0) {
-            oddArr[oddCount++] = arr[i]; // store then increment index (fixes off-by-one)
+            // store at index oddCount, then increment oddCount
+            oddArr[oddCount++] = arr[i];
         }
     }
-    if (oddCount == 0) {
-        // no odd numbers — return a sentinel value
-        return -1;
-    }
-    int maxOdd = *std::max_element(oddArr, oddArr + oddCount);
-    return maxOdd;
+    return oddCount;
 }
-
+void sortArray(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+	}
+}
 int main() {
-    cout << "------Menu------" << endl;
-    cout << "1. Input faculty numbers(max 25)" << endl;
-    cout << "2. Make a new array only of odd faculty numbers and get the max value" << endl;
-    cout << "3. Overwrite the initial array and sort it in ascending order" << endl;
-    cout << "4. Exit" << endl;
+
     int choice;
     int initial_arr[MAX_STUDENTS];
     int num_students = 0; // track how many students were entered
 
     do {
+        cout << "------Menu------" << endl;
+        cout << "1. Input faculty numbers(max 25)" << endl;
+        cout << "2. Make a new array only of odd faculty numbers and get the max value" << endl;
+        cout << "3. Overwrite the initial array and sort it in ascending order" << endl;
+        cout << "4. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
         switch (choice) {
@@ -76,13 +82,18 @@ int main() {
                 cout << "No faculty numbers entered yet. Choose option 1 first." << endl;
             }
             else {
-                int maxOdd = OddArray(initial_arr, num_students); // pass actual count
-                if (maxOdd == -1) {
+                int oddArr[MAX_STUDENTS];
+                int oddCount = OddArray(initial_arr, num_students, oddArr);
+
+                if (oddCount == 0) {
                     cout << "No odd faculty numbers found." << endl;
                 }
                 else {
+                    printArray(oddArr, oddCount, "Odd faculty numbers:");
+                    int maxOdd = *max_element(oddArr, oddArr + oddCount);
                     cout << "Maximum odd faculty number: " << maxOdd << endl;
                 }
+
                 printArray(initial_arr, num_students, "Initial array remains unchanged:");
             }
             break;
@@ -92,8 +103,7 @@ int main() {
                 cout << "No faculty numbers entered yet. Choose option 1 first." << endl;
             }
             else {
-                // overwrite initial array and sort ascending
-                sort(initial_arr, initial_arr + num_students);
+                sortArray(initial_arr, num_students);
                 printArray(initial_arr, num_students, "Array after sorting ascending:");
             }
             break;
